@@ -29,6 +29,6 @@ This Python script provides a simple yet powerful AES encryption and decryption 
     - **Encrypt a file🎉:**
 
         ```bash
-        python aes.py
+        python test.py
         ```
 
