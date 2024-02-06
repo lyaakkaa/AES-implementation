@@ -42,3 +42,14 @@ r_con = (
     0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
     0xD4, 0xB3, 0x7D, 0xFA, 0xEF, 0xC5, 0x91, 0x39,
 )
+
+def sub_bytes(s):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] = s_box[s[i][j]]
+
+
+def inv_sub_bytes(s):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] = inv_s_box[s[i][j]]
