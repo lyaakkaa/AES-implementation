@@ -110,3 +110,16 @@ def bytes2matrix(text):
 
 def matrix2bytes(matrix):
     return bytes(sum(matrix, []))
+
+def xor_bytes(a, b):
+    return bytes(i^j for i, j in zip(a, b))
+
+def inc_bytes(a):
+    out = list(a)
+    for i in reversed(range(len(out))):
+        if out[i] == 0xFF:
+            out[i] = 0
+        else:
+            out[i] += 1
+            break
+    return bytes(out)
