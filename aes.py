@@ -103,3 +103,10 @@ def inv_mix_columns(s):
         s[i][2] ^= u
         s[i][3] ^= v
     mix_columns(s)
+
+
+def bytes2matrix(text):
+    return [list(text[i:i+4]) for i in range(0, len(text), 4)]
+
+def matrix2bytes(matrix):
+    return bytes(sum(matrix, []))
