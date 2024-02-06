@@ -1,5 +1,8 @@
 # Python AES Encryption and Decryption 🔒🧑🏿‍💻
 
+![aes](AES.png)
+
+
 ## Overview
 
 This Python script provides a simple yet powerful AES encryption and decryption tool for any file. AES (Advanced Encryption Standard) ensures robust security, and with this script, you can safeguard your sensitive files effortlessly.
