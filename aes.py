@@ -251,3 +251,34 @@ class AES:
             previous = ciphertext_block
 
         return unpad(b''.join(blocks))
+    
+
+    def encrypt_pcbc(self, plaintext, iv):
+        assert len(iv) == 16
+
+        plaintext = pad(plaintext)
+
+        blocks = []
+        prev_ciphertext = iv
+        prev_plaintext = bytes(16)
+        for plaintext_block in split_blocks(plaintext):
+            ciphertext_block = self.encrypt_block(xor_bytes(plaintext_block, xor_bytes(prev_ciphertext, prev_plaintext)))
+            blocks.append(ciphertext_block)
+            prev_ciphertext = ciphertext_block
+            prev_plaintext = plaintext_block
+
+        return b''.join(blocks)
+
+    def decrypt_pcbc(self, ciphertext, iv):
+        assert len(iv) == 16
+        blocks = []
+        prev_ciphertext = iv
+        prev_plaintext = bytes(16)
+        for ciphertext_block in split_blocks(ciphertext):
+            # PCBC mode decrypt: (prev_plaintext XOR prev_ciphertext) XOR decrypt(ciphertext_block)
+            plaintext_block = xor_bytes(xor_bytes(prev_ciphertext, prev_plaintext), self.decrypt_block(ciphertext_block))
+            blocks.append(plaintext_block)
+            prev_ciphertext = ciphertext_block
+            prev_plaintext = plaintext_block
+
+        return unpad(b''.join(blocks))
