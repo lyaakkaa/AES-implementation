@@ -123,3 +123,19 @@ def inc_bytes(a):
             out[i] += 1
             break
     return bytes(out)
+
+def pad(plaintext):
+    padding_len = 16 - (len(plaintext) % 16)
+    padding = bytes([padding_len] * padding_len)
+    return plaintext + padding
+
+def unpad(plaintext):
+    padding_len = plaintext[-1]
+    assert padding_len > 0
+    message, padding = plaintext[:-padding_len], plaintext[-padding_len:]
+    assert all(p == padding_len for p in padding)
+    return message
+
+def split_blocks(message, block_size=16, require_padding=True):
+    assert len(message) % block_size == 0 or not require_padding
+    return [message[i:i+16] for i in range(0, len(message), block_size)]
