@@ -139,3 +139,32 @@ def unpad(plaintext):
 def split_blocks(message, block_size=16, require_padding=True):
     assert len(message) % block_size == 0 or not require_padding
     return [message[i:i+16] for i in range(0, len(message), block_size)]
+
+
+
+class AES:
+    rounds_by_key_size = {16: 10, 24: 12, 32: 14}
+    def __init__(self, master_key):
+        assert len(master_key) in AES.rounds_by_key_size
+        self.n_rounds = AES.rounds_by_key_size[len(master_key)]
+        self._key_matrices = self._expand_key(master_key)
+
+    def _expand_key(self, master_key):
+        key_columns = bytes2matrix(master_key)
+        iteration_size = len(master_key) // 4
+
+        i = 1
+        while len(key_columns) < (self.n_rounds + 1) * 4:
+            word = list(key_columns[-1])
+            if len(key_columns) % iteration_size == 0:
+                word.append(word.pop(0))
+                word = [s_box[b] for b in word]
+                word[0] ^= r_con[i]
+                i += 1
+            elif len(master_key) == 32 and len(key_columns) % iteration_size == 4:
+                word = [s_box[b] for b in word]
+
+            word = xor_bytes(word, key_columns[-iteration_size])
+            key_columns.append(word)
+
+        return [key_columns[4*i : 4*(i+1)] for i in range(len(key_columns) // 4)]
