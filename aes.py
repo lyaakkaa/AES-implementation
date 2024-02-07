@@ -282,3 +282,33 @@ class AES:
             prev_plaintext = plaintext_block
 
         return unpad(b''.join(blocks))
+
+
+    def encrypt_cfb(self, plaintext, iv):
+        
+        assert len(iv) == 16
+
+        blocks = []
+        prev_ciphertext = iv
+        for plaintext_block in split_blocks(plaintext, require_padding=False):
+            # CFB mode encrypt: plaintext_block XOR encrypt(prev_ciphertext)
+            ciphertext_block = xor_bytes(plaintext_block, self.encrypt_block(prev_ciphertext))
+            blocks.append(ciphertext_block)
+            prev_ciphertext = ciphertext_block
+
+        return b''.join(blocks)
+
+    def decrypt_cfb(self, ciphertext, iv):
+       
+        assert len(iv) == 16
+
+        blocks = []
+        prev_ciphertext = iv
+        for ciphertext_block in split_blocks(ciphertext, require_padding=False):
+            # CFB mode decrypt: ciphertext XOR decrypt(prev_ciphertext)
+            plaintext_block = xor_bytes(ciphertext_block, self.encrypt_block(prev_ciphertext))
+            blocks.append(plaintext_block)
+            prev_ciphertext = ciphertext_block
+
+        return b''.join(blocks)
+
