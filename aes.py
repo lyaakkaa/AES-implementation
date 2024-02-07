@@ -303,3 +303,56 @@ class AES:
 
         return b''.join(blocks)
 
+    def encrypt_ofb(self, plaintext, iv):
+        assert len(iv) == 16
+
+        blocks = []
+        previous = iv
+        for plaintext_block in split_blocks(plaintext, require_padding=False):
+            # OFB mode encrypt: plaintext_block XOR encrypt(previous)
+            block = self.encrypt_block(previous)
+            ciphertext_block = xor_bytes(plaintext_block, block)
+            blocks.append(ciphertext_block)
+            previous = block
+
+        return b''.join(blocks)
+
+    def decrypt_ofb(self, ciphertext, iv):
+        assert len(iv) == 16
+
+        blocks = []
+        previous = iv
+        for ciphertext_block in split_blocks(ciphertext, require_padding=False):
+            # OFB mode decrypt: ciphertext XOR encrypt(previous)
+            block = self.encrypt_block(previous)
+            plaintext_block = xor_bytes(ciphertext_block, block)
+            blocks.append(plaintext_block)
+            previous = block
+
+        return b''.join(blocks)
+
+    def encrypt_ctr(self, plaintext, iv):
+        assert len(iv) == 16
+
+        blocks = []
+        nonce = iv
+        for plaintext_block in split_blocks(plaintext, require_padding=False):
+            # CTR mode encrypt: plaintext_block XOR encrypt(nonce)
+            block = xor_bytes(plaintext_block, self.encrypt_block(nonce))
+            blocks.append(block)
+            nonce = inc_bytes(nonce)
+
+        return b''.join(blocks)
+
+    def decrypt_ctr(self, ciphertext, iv):
+        assert len(iv) == 16
+
+        blocks = []
+        nonce = iv
+        for ciphertext_block in split_blocks(ciphertext, require_padding=False):
+            # CTR mode decrypt: ciphertext XOR encrypt(nonce)
+            block = xor_bytes(ciphertext_block, self.encrypt_block(nonce))
+            blocks.append(block)
+            nonce = inc_bytes(nonce)
+
+        return b''.join(blocks)
